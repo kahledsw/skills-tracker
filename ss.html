@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Skills Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .skill {
+      background: #e3e4e8;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .progress-bar {
+      height: 20px;
+      background: #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .progress {
+      height: 100%;
+      background: #4caf50;
+      text-align: right;
+      color: white;
+      padding-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Skills Tracker</h1>
+  <div class="container">
+    <input type="text" id="skillName" placeholder="Skill Name" />
+    <input type="number" id="proficiency" placeholder="Proficiency % (0-100)" />
+    <select id="category">
+      <option value="Frontend">Frontend</option>
+      <option value="Backend">Backend</option>
+      <option value="Soft Skill">Soft Skill</option>
+    </select>
+    <button onclick="addSkill()">Add Skill</button>
+    <div id="skillsList"></div>
+  </div>
+
+  <script>
+    const skillsList = document.getElementById('skillsList');
+
+    function loadSkills() {
+      const skills = JSON.parse(localStorage.getItem('skills')) || [];
+      skillsList.innerHTML = '';
+      skills.forEach((skill, index) => {
+        const skillDiv = document.createElement('div');
+        skillDiv.className = 'skill';
+        skillDiv.innerHTML = `
+          <strong>${skill.name}</strong> (${skill.category})
+          <div class="progress-bar">
+            <div class="progress" style="width: ${skill.level}%">${skill.level}%</div>
+          </div>
+          <button onclick="deleteSkill(${index})">Delete</button>
+        `;
+        skillsList.appendChild(skillDiv);
+      });
+    }
+
+    function addSkill() {
+      const name = document.getElementById('skillName').value;
+      const level = document.getElementById('proficiency').value;
+      const category = document.getElementById('category').value;
+      if (!name || !level || level < 0 || level > 100) {
+        alert('Please enter valid skill name and proficiency (0–100).');
+        return;
+      }
+      const skills = JSON.parse(localStorage.getItem('skills')) || [];
+      skills.push({ name, level, category });
+      localStorage.setItem('skills', JSON.stringify(skills));
+      loadSkills();
+      document.getElementById('skillName').value = '';
+      document.getElementById('proficiency').value = '';
+    }
+
+    function deleteSkill(index) {
+      const skills = JSON.parse(localStorage.getItem('skills')) || [];
+      skills.splice(index, 1);
+      localStorage.setItem('skills', JSON.stringify(skills));
+      loadSkills();
+    }
+
+    window.onload = loadSkills;
+  </script>
+</body>
+</html>
